@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kamu Saturnusku ♡</title>
+  <style>
+    body { margin:0; overflow:hidden; background:#000; }
+    canvas { display:block; }
+    #info {
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      color:white; font-size:24px; text-align:center; pointer-events:none;
+      text-shadow:0 0 20px #ff00ff; font-family:Arial;
+    }
+    .modal {
+      position:fixed; inset:0; background:rgba(0,0,0,0.97); display:none;
+      align-items:center; justify-content:center; flex-direction:column; z-index:100;
+    }
+    .modal img { max-width:90%; max-height:70vh; border-radius:20px; border:6px solid #ff00ff; box-shadow:0 0 50px #ff00ff; }
+    .modal p { color:#ff99ff; font-size:22px; margin-top:20px; max-width:90%; text-align:center; }
+    .close { position:absolute; top:20px; right:30px; font-size:60px; color:#ff00ff; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<div id="info">Kamu Saturnusku — aku rela mengorbit selamanya ♡</div>
+
+<div class="modal" id="modal">
+  <span class="close">×</span>
+  <img id="modal-img" src="">
+  <p id="modal-text"></p>
+</div>
+
+<!-- Three.js mini (super ringan) -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.167.1/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.167.1/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+// Setup Three.js
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000008);
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(devicePixelRatio);
+document.body.appendChild(renderer.domElement);
+
+// Cahaya
+const light = new THREE.PointLight(0xffffff, 2);
+light.position.set(10,10,10);
+scene.add(light);
+scene.add(new THREE.AmbientLight(0x404040));
+
+// Planet (foto dia) - BULAT SEMPURNA
+const planetGeometry = new THREE.SphereGeometry(3, 64, 64);
+const planetTexture = new THREE.TextureLoader().load('dia.jpg'); // GANTI FOTO DIA
+const planetMaterial = new THREE.MeshPhongMaterial({ map: planetTexture });
+const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+scene.add(planet);
+
+// Cincin Saturnus dari ribuan partikel
+const ringGeometry = new THREE.BufferGeometry();
+const ringVertices = [];
+const ringColors = [];
+const memories = [
+  {img:'foto1.jpg', text:'Pertama kali senyum kamu bikin aku jatuh cinta'},
+  {img:'foto2.jpg', text:'Kamu alasan aku senyum setiap hari ♡'},
+  {img:'foto3.jpg', text:'Setiap detik sama kamu adalah keajaiban'},
+  {img:'foto4.jpg', text:'I love you to Saturn and back ❤️'},
+  // Tambah sendiri sebanyak mau
+];
+
+for(let i = 0; i < 12000; i++) {
+  const angle = Math.random() * Math.PI * 2;
+  const radius = 4.5 + Math.random() * 4;
+  const y = (Math.random() - 0.5) * 0.15;
+
+  const x = Math.cos(angle) * radius;
+  const z = Math.sin(angle) * radius;
+
+  ringVertices.push(x, y, z);
+
+  // Warna partikel cincin (krem, pink, putih)
+  const color = new THREE.Color();
+  if (i < memories.length * 50) {
+    color.setHSL(0.8, 0.8, 0.9); // partikel kenangan lebih terang
+  } else {
+    color.setHSL(0.1, 0.3, Math.random() * 0.4 + 0.5);
+  }
+  ringColors.push(color.r, color.g, color.b);
+}
+
+ringGeometry.setAttribute('position', new THREE.Float32BufferAttribute(ringVertices, 3));
+ringGeometry.setAttribute('color', new THREE.Float32BufferAttribute(ringColors, 3));
+
+const ringMaterial = new THREE.PointsMaterial({
+  size: 0.04,
+  vertexColors: true,
+  transparent: true,
+  opacity: 0.9,
+  blending: THREE.AdditiveBlending
+});
+const ring = new THREE.Points(ringGeometry, ringMaterial);
+ring.rotation.x = Math.PI / 2 * 1.4; // miring kayak Saturnus asli
+scene.add(ring);
+
+camera.position.z = 12;
+
+// Kontrol putar + zoom
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.5;
+
+// Raycaster buat klik partikel kenangan
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let clickedMemory = 0;
+
+window.addEventListener('click', (e) => {
+  mouse.x = (e.clientX / innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObject(ring);
+  if (intersects.length > 0 && clickedMemory < memories.length) {
+    const mem = memories[clickedMemory % memories.length];
+    document.getElementById('modal-img').src = mem.img;
+    document.getElementById('modal-text').innerText = mem.text;
+    document.getElementById('modal').style.display = 'flex';
+    clickedMemory++;
+  }
+});
+
+document.querySelector('.close').onclick = () => {
+  document.getElementById('modal').style.display = 'none';
+};
+
+// Animasi
+function animate() {
+  requestAnimationFrame(animate);
+  planet.rotation.y += 0.002;
+  ring.rotation.z += 0.0005;
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+// Responsive
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+// Musik
+const lagu = new Audio('lagu.mp3');
+lagu.loop = true;
+document.body.onclick = () => lagu.play();
+</script>
+</body>
+</html>
