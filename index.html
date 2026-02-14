@@ -2,51 +2,160 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Valentine Day's💫❤️</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Valentine Day's Titin 💫❤️</title>
   <style>
-    body { margin:0; overflow:hidden; background:#000; font-family:sans-serif; color:white; }
+    body, html { 
+      margin:0; 
+      padding:0;
+      height:100%;
+      overflow:hidden; 
+      background:#000; 
+      font-family:sans-serif; 
+      color:white; 
+      touch-action: none;
+    }
     
+    canvas { 
+      position: fixed; 
+      top:0; left:0; 
+      width:100%; height:100%; 
+      display:block; 
+      z-index: 1;
+    }
+    
+    /* ── Falling icons ── */
+    #falling-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 11;           /* Di atas background message (z10), tapi di bawah .msg-box (z12) */
+      overflow: hidden;
+    }
+
+    .falling-icon {
+      position: absolute;
+      font-size: 2.2rem;
+      user-select: none;
+      pointer-events: none;
+      animation: fall linear forwards;
+      will-change: transform, opacity;
+      text-shadow: 0 0 12px rgba(255, 105, 180, 0.7); /* glow supaya lebih kelihatan */
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-15vh) rotate(0deg);
+        opacity: 0.95;
+      }
+      100% {
+        transform: translateY(115vh) rotate(900deg);
+        opacity: 0;
+      }
+    }
+
+    /* ── Message styles ── */
     #message, #surprise {
-      position: absolute; inset: 0; display: none; justify-content: center; align-items: center;
-      background: rgba(0,0,0,0.7); z-index: 10; text-align: center; pointer-events: none;
+      position: fixed; 
+      inset: 0; 
+      display: none; 
+      justify-content: center; 
+      align-items: center;
+      background: rgba(0,0,0,0); 
+      z-index: 10; 
+      text-align: center; 
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.8s ease, background 0.8s ease;
+    }
+    
+    #message.show, #surprise.show {
+      display: flex;
+      pointer-events: auto;
+      opacity: 1;
+      background: rgba(0,0,0,0.62); /* sedikit lebih transparan biar icon lebih jelas */
     }
     
     .msg-box {
-      background: rgba(255,105,180,0.15); backdrop-filter: blur(12px);
-      padding: 50px 40px; border-radius: 30px; max-width: 92%; max-height: 90vh; overflow-y: auto;
-      box-shadow: 0 0 70px #ff69b4; pointer-events: auto;
+      background: rgba(255,105,180,0.12);
+      backdrop-filter: blur(10px);
+      padding: 5vw 4vw;
+      border-radius: 20px;
+      max-width: 90vw;
+      max-height: 88vh;
+      overflow-y: auto;
+      box-shadow: 0 0 40px rgba(255,105,180,0.6);
+      transform: scale(0.85);
+      opacity: 0;
+      transition: transform 0.7s ease-out, opacity 0.7s ease-out;
+      z-index: 12;           /* Paling depan – teks, foto, tombol tetap di atas icon jatuh */
     }
     
-    h1 { font-size: clamp(2.8rem, 9vw, 4.5rem); margin: 0 0 25px; text-shadow: 0 0 45px #ff1493; }
-    p { font-size: clamp(1.3rem, 4.5vw, 1.8rem); line-height: 1.7; margin: 25px 0; }
+    #message.show .msg-box, #surprise.show .msg-box {
+      transform: scale(1);
+      opacity: 1;
+    }
+    
+    h1 { 
+      font-size: clamp(1.9rem, 6vw, 3rem); 
+      margin: 0 0 8px; 
+      text-shadow: 0 0 25px #ff1493; 
+    }
+    p { 
+      font-size: clamp(0.95rem, 3.2vw, 1.25rem); 
+      line-height: 1.7; 
+      margin: 10px 0; 
+    }
     
     img.photo {
-      width: clamp(220px, 50vw, 340px);  /* ← Diperbesar */
-      height: clamp(220px, 50vw, 340px);
-      border-radius: 50%; object-fit: cover; border: 6px solid #ff69b4;
-      box-shadow: 0 0 50px #ff1493; margin: 25px auto; display: block;
+      width:  clamp(90px, 26vw, 130px); 
+      height: clamp(90px, 26vw, 130px);
+      border-radius: 50%; 
+      object-fit: cover; 
+      border: 3px solid #ff69b4;
+      box-shadow: 0 0 18px #ff1493;
+      margin: 8px auto 16px; 
+      display: block;
     }
     
     .btn {
-      padding: 16px 50px; font-size: 1.4rem; margin: 20px; border: none; border-radius: 50px;
-      cursor: pointer; transition: all 0.3s; font-weight: bold;
+      padding: 10px 28px; 
+      font-size: clamp(1rem, 3.5vw, 1.1rem); 
+      margin: 8px; 
+      border: none; 
+      border-radius: 50px;
+      cursor: pointer; 
+      transition: all 0.4s ease;
+      font-weight: bold;
     }
     
     #nextBtn {
-      background: #ff1493; color: white; box-shadow: 0 0 25px #ff69b4;
+      background: #ff1493; 
+      color: white; 
+      box-shadow: 0 0 16px #ff69b4;
     }
-    #nextBtn:hover { transform: scale(1.12); background: #d81b60; }
+    #nextBtn:hover, #nextBtn:active { 
+      transform: scale(1.08) translateY(-2px); 
+      background: #d81b60; 
+      box-shadow: 0 0 24px #ff69b4;
+    }
     
     #noBtn {
-      background: #78909c; color: white;
-      position: relative; transition: all 0.2s;
+      background: #78909c; 
+      color: white;
+      position: relative; 
+      transition: all 0.4s ease;
+    }
+    #noBtn:hover, #noBtn:active {
+      background: #607d8b;
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
 
-  <!-- Layer 1: Pesan pertama (kalimat diperpanjang) -->
+  <div id="falling-container"></div>
+
   <div id="message">
     <div class="msg-box">
       <h1>Happy Valentine's Day,<br><span id="nama"></span>! ❤️</h1>
@@ -64,14 +173,13 @@
     </div>
   </div>
 
-  <!-- Layer 2: Surprise cokelat (kalimat juga diperpanjang sedikit) -->
   <div id="surprise">
     <div class="msg-box">
       <h1>Yeyy kamu klik next! 🥰</h1>
-      <img class="photo" src="foto.jpg" alt="Hadiah spesial">
-      <p style="font-size:1.6rem; margin:35px 0; line-height:1.8;">
-        walaupun kamu bilang tidak terlalu suka cokelat...<br>
-        engkak papa kan aku kasih? Hehe...<br>
+      <img class="photo" src="surprise.jpg" alt="Hadiah spesial">
+      <p style="font-size: clamp(1.2rem, 4vw, 1.35rem); margin:18px 0; line-height:1.7;">
+        Walaupun kamu bilang tidak terlalu suka cokelat...<br>
+        Enggak papa kan aku kasih? Hehe...<br>
         Ini cuma bentuk kecil dari rasa sayangku yang besar buat kamu.<br>
         Makannya pelan-pelan aja ya, nikmatin satu-satu, biar rasanya lebih lama nempel di hati :)<br>
         Aku sayang kamu banget, Titin...
@@ -80,172 +188,186 @@
     </div>
   </div>
 
-  <!-- Musik dari file lokal -->
   <audio id="bgm" loop preload="auto">
     <source src="romance.mp3" type="audio/mpeg">
   </audio>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <script>
-    // ================== DATA PERSONAL ==================
     const namaDia = "Titin";
-    const pesanCustom = `Kamu adalah bintang terindah di galaksi hatiku.\nSelamanya bersama ya? 💫❤️`; // ini tidak dipakai lagi karena sudah diganti teks panjang di HTML
-    // ===================================================
 
-    // Musik langsung play dari awal (mute dulu lalu unmute)
     const audio = document.getElementById('bgm');
     audio.volume = 0;
     audio.play().catch(() => {});
-    setTimeout(() => {
-      audio.volume = 0.35;
-    }, 1500);
+    setTimeout(() => { audio.volume = 0.3; }, 1000);
 
-    // Three.js setup
+    // ── Falling Icons ───────────────────────────────────────────────
+    const icons = ['❤️','💖','💕','💞','💗','💓','💘','💝','💋','✨','💫','🌟','🥰','🌸','🌹'];
+
+    function createFallingIcon() {
+      const icon = document.createElement('div');
+      icon.className = 'falling-icon';
+      icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+      
+      icon.style.left = Math.random() * 100 + 'vw';
+      const duration = 6 + Math.random() * 9;          // 6–15 detik
+      icon.style.animationDuration = duration + 's';
+      icon.style.animationDelay = Math.random() * 1.5 + 's';
+      
+      const size = 1.4 + Math.random() * 1.8;
+      icon.style.fontSize = size + 'rem';
+      
+      document.getElementById('falling-container').appendChild(icon);
+      
+      setTimeout(() => icon.remove(), (duration + 2) * 1000);
+    }
+
+    let fallingInterval = null;
+
+    function startFalling() {
+      if (fallingInterval) return;
+      
+      fallingInterval = setInterval(() => {
+        const howMany = Math.floor(Math.random() * 3) + 1;
+        for (let i = 0; i < howMany; i++) {
+          createFallingIcon();
+        }
+      }, 800);
+    }
+
+    function stopFalling() {
+      if (fallingInterval) {
+        clearInterval(fallingInterval);
+        fallingInterval = null;
+      }
+    }
+    // ───────────────────────────────────────────────────────────────
+
     let scene = new THREE.Scene();
     let camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 2000);
-    let renderer = new THREE.WebGLRenderer({ antialias: true });
+    let renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
     renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     document.body.appendChild(renderer.domElement);
 
     scene.background = new THREE.Color(0x000011);
     camera.position.set(0, 0, 8);
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-    const light1 = new THREE.PointLight(0xff69b4, 3, 50); light1.position.set(5, 5, 5); scene.add(light1);
-    const light2 = new THREE.PointLight(0xffffff, 2, 40); light2.position.set(-5, 5, -5); scene.add(light2);
+    scene.add(new THREE.PointLight(0xff69b4, 3, 50).position.set(5,5,5));
+    scene.add(new THREE.PointLight(0xffffff, 2, 40).position.set(-5,5,-5));
 
-    // Stars
     const starsGeometry = new THREE.BufferGeometry();
-    const starsCount = 8000;
+    const starsCount = 6000;
     const posArray = new Float32Array(starsCount * 3);
-    for (let i = 0; i < starsCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 2000;
-    }
+    for (let i = 0; i < starsCount * 3; i++) posArray[i] = (Math.random() - 0.5) * 2000;
     starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 1.2 });
-    scene.add(new THREE.Points(starsGeometry, starsMaterial));
+    scene.add(new THREE.Points(starsGeometry, new THREE.PointsMaterial({ color: 0xffffff, size: 1.1 })));
 
-    // Heart shape
     const heartShape = new THREE.Shape();
-    heartShape.moveTo(0, 0);
-    heartShape.bezierCurveTo(0, 3, -5, 5, -5, 2);
-    heartShape.bezierCurveTo(-5, -1, -2, -4, 0, -6);
-    heartShape.bezierCurveTo(2, -4, 5, -1, 5, 2);
-    heartShape.bezierCurveTo(5, 5, 0, 3, 0, 0);
-    const extrudeSettings = { depth: 1, bevelEnabled: true, bevelThickness: 0.5, bevelSize: 0.3, bevelSegments: 5 };
+    heartShape.moveTo(0,0);
+    heartShape.bezierCurveTo(0,3,-5,5,-5,2);
+    heartShape.bezierCurveTo(-5,-1,-2,-4,0,-6);
+    heartShape.bezierCurveTo(2,-4,5,-1,5,2);
+    heartShape.bezierCurveTo(5,5,0,3,0,0);
+    const extrudeSettings = { depth:1, bevelEnabled:true, bevelThickness:0.5, bevelSize:0.3, bevelSegments:5 };
     const heartGeometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
-    const heartMaterial = new THREE.MeshPhongMaterial({
-      color: 0xff1493,
-      emissive: 0xff69b4,
-      emissiveIntensity: 0.7,
-      shininess: 120
-    });
+    const heartMaterial = new THREE.MeshPhongMaterial({ color:0xff1493, emissive:0xff69b4, emissiveIntensity:0.7, shininess:120 });
     const mainHeart = new THREE.Mesh(heartGeometry, heartMaterial);
-    mainHeart.scale.set(1.2, 1.2, 1.2);
+    mainHeart.scale.set(1.2,1.2,1.2);
     mainHeart.rotation.x = -Math.PI / 4;
     scene.add(mainHeart);
 
-    // Floating hearts
     let smallHearts = [];
-    for (let i = 0; i < 250; i++) {
-      const scale = 0.08 + Math.random() * 0.25;
+    for (let i = 0; i < 180; i++) {
+      const scale = 0.08 + Math.random() * 0.22;
       const h = new THREE.Mesh(heartGeometry, heartMaterial.clone());
       h.scale.set(scale, scale, scale);
-      h.position.set(
-        (Math.random() - 0.5) * 60,
-        (Math.random() - 0.5) * 60,
-        (Math.random() - 0.5) * 60
-      );
-      h.userData = {
-        speed: 0.005 + Math.random() * 0.015,
-        rotSpeed: (Math.random() - 0.5) * 0.03,
-        orbitRadius: 10 + Math.random() * 20,
-        orbitAngle: Math.random() * Math.PI * 2
-      };
+      h.position.set((Math.random()-0.5)*60, (Math.random()-0.5)*60, (Math.random()-0.5)*60);
+      h.userData = { speed:0.005+Math.random()*0.015, rotSpeed:(Math.random()-0.5)*0.03, orbitRadius:10+Math.random()*20, orbitAngle:Math.random()*Math.PI*2 };
       scene.add(h);
       smallHearts.push(h);
     }
 
-    // Klik hati besar
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
     window.addEventListener('click', (event) => {
       mouse.x = (event.clientX / innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / innerHeight) * 2 + 1;
-
       raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObject(mainHeart);
-
-      if (intersects.length > 0 || Math.hypot(mouse.x, mouse.y) < 0.5) {
+      if (raycaster.intersectObject(mainHeart).length > 0 || Math.hypot(mouse.x, mouse.y) < 0.5) {
         document.getElementById('nama').textContent = namaDia;
-        document.getElementById('message').style.display = 'flex';
+        document.getElementById('message').classList.add('show');
+        startFalling();  // Mulai jatuh saat message pertama muncul
 
         // Explosion
-        for (let i = 0; i < 400; i++) {
-          const scale = 0.05 + Math.random() * 0.2;
+        for (let i = 0; i < 250; i++) {
+          const scale = 0.05 + Math.random() * 0.18;
           const particle = new THREE.Mesh(heartGeometry, heartMaterial.clone());
           particle.scale.set(scale, scale, scale);
           particle.position.copy(mainHeart.position);
-          particle.userData = {
-            vx: (Math.random() - 0.5) * 0.4,
-            vy: (Math.random() - 0.5) * 0.4 + 0.1,
-            vz: (Math.random() - 0.5) * 0.4,
-            life: 1 + Math.random() * 2
-          };
+          particle.userData = { vx:(Math.random()-0.5)*0.4, vy:(Math.random()-0.5)*0.4+0.1, vz:(Math.random()-0.5)*0.4, life:1+Math.random()*2 };
           scene.add(particle);
           smallHearts.push(particle);
         }
       }
     });
 
-    // Tombol Tidak mau berpindah saat cursor mendekat
     const noBtn = document.getElementById('noBtn');
     noBtn.addEventListener('mousemove', (e) => {
       const rect = noBtn.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
       const dist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
-
-      if (dist < 150) {
+      if (dist < 140) {
         const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) + Math.PI;
-        const move = 100 + Math.random() * 80;
-        const newX = Math.cos(angle) * move;
-        const newY = Math.sin(angle) * move;
-        noBtn.style.transform = `translate(${newX}px, ${newY}px)`;
+        const move = 90 + Math.random() * 70;
+        noBtn.style.transform = `translate(${Math.cos(angle)*move}px, ${Math.sin(angle)*move}px)`;
       }
     });
 
-    // Klik Next → tampilkan surprise
     document.getElementById('nextBtn').addEventListener('click', () => {
-      document.getElementById('message').style.display = 'none';
-      document.getElementById('surprise').style.display = 'flex';
+      document.getElementById('message').classList.remove('show');
+      setTimeout(() => {
+        document.getElementById('surprise').classList.add('show');
+        startFalling();  // Lanjut / mulai lagi di surprise
+      }, 400);
 
-      // Confetti surprise
-      for (let i = 0; i < 100; i++) {
+      // Confetti
+      for (let i = 0; i < 80; i++) {
         setTimeout(() => {
           const conf = document.createElement('div');
-          conf.style.cssText = `
-            position:fixed; width:12px; height:12px; border-radius:50%;
-            background:${['#ff1493','#ffeb3b','#4caf50','#2196f3'][Math.floor(Math.random()*4)]};
-            left:${Math.random()*100}vw; top:-20px; pointer-events:none;
-            animation: fall ${Math.random()*3+2}s linear forwards;
-          `;
+          conf.style.cssText = `position:fixed;width:10px;height:10px;border-radius:50%;background:${['#ff1493','#ffeb3b','#4caf50','#2196f3'][Math.floor(Math.random()*4)]};left:${Math.random()*100}vw;top:-20px;pointer-events:none;animation:fall ${Math.random()*3+2}s linear forwards;`;
           document.body.appendChild(conf);
           setTimeout(() => conf.remove(), 5000);
-        }, i * 40);
+        }, i * 50);
       }
     });
 
-    // CSS confetti
-    const style = document.createElement('style');
-    style.innerHTML = `@keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity:0; } }`;
-    document.head.appendChild(style);
+    document.head.appendChild(Object.assign(document.createElement('style'), { innerHTML: `@keyframes fall {to{transform:translateY(110vh) rotate(720deg);opacity:0;}}` }));
 
-    // Animasi Three.js
+    function resizeRenderer() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    }
+
+    let resizeTimeout;
+    function debounceResize() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(resizeRenderer, 100);
+    }
+
+    window.addEventListener('resize', debounceResize);
+    window.addEventListener('orientationchange', debounceResize);
+    window.addEventListener('load', resizeRenderer);
+
     function animate() {
       requestAnimationFrame(animate);
-
       const time = Date.now() * 0.0005;
       mainHeart.rotation.y += 0.003;
       mainHeart.scale.setScalar(1.2 + Math.sin(time * 2) * 0.15);
@@ -262,20 +384,14 @@
           h.position.y += h.userData.vy * 0.08;
           h.position.z += h.userData.vz * 0.08;
           h.userData.life -= 0.008;
-          h.material.opacity = h.userData.life;
-          if (h.userData.life <= 0) scene.remove(h);
+          if (h.material.opacity) h.material.opacity = h.userData.life;
+          if (h.userData.life <= 0) { scene.remove(h); const idx = smallHearts.indexOf(h); if (idx > -1) smallHearts.splice(idx, 1); }
         }
       });
 
       renderer.render(scene, camera);
     }
     animate();
-
-    window.addEventListener('resize', () => {
-      camera.aspect = innerWidth / innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(innerWidth, innerHeight);
-    });
   </script>
 </body>
 </html>
