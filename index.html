@@ -3,159 +3,279 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kamu Saturnusku ♡</title>
+  <title>Valentine Day's💫❤️</title>
   <style>
-    body { margin:0; overflow:hidden; background:#000; }
-    canvas { display:block; }
-    #info {
-      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-      color:white; font-size:24px; text-align:center; pointer-events:none;
-      text-shadow:0 0 20px #ff00ff; font-family:Arial;
+    body { margin:0; overflow:hidden; background:#000; font-family:sans-serif; color:white; }
+    
+    #message, #surprise {
+      position: absolute; inset: 0; display: none; justify-content: center; align-items: center;
+      background: rgba(0,0,0,0.7); z-index: 10; text-align: center; pointer-events: none;
     }
-    .modal {
-      position:fixed; inset:0; background:rgba(0,0,0,0.97); display:none;
-      align-items:center; justify-content:center; flex-direction:column; z-index:100;
+    
+    .msg-box {
+      background: rgba(255,105,180,0.15); backdrop-filter: blur(12px);
+      padding: 50px 40px; border-radius: 30px; max-width: 92%; max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 0 70px #ff69b4; pointer-events: auto;
     }
-    .modal img { max-width:90%; max-height:70vh; border-radius:20px; border:6px solid #ff00ff; box-shadow:0 0 50px #ff00ff; }
-    .modal p { color:#ff99ff; font-size:22px; margin-top:20px; max-width:90%; text-align:center; }
-    .close { position:absolute; top:20px; right:30px; font-size:60px; color:#ff00ff; cursor:pointer; }
+    
+    h1 { font-size: clamp(2.8rem, 9vw, 4.5rem); margin: 0 0 25px; text-shadow: 0 0 45px #ff1493; }
+    p { font-size: clamp(1.3rem, 4.5vw, 1.8rem); line-height: 1.7; margin: 25px 0; }
+    
+    img.photo {
+      width: clamp(220px, 50vw, 340px);  /* ← Diperbesar */
+      height: clamp(220px, 50vw, 340px);
+      border-radius: 50%; object-fit: cover; border: 6px solid #ff69b4;
+      box-shadow: 0 0 50px #ff1493; margin: 25px auto; display: block;
+    }
+    
+    .btn {
+      padding: 16px 50px; font-size: 1.4rem; margin: 20px; border: none; border-radius: 50px;
+      cursor: pointer; transition: all 0.3s; font-weight: bold;
+    }
+    
+    #nextBtn {
+      background: #ff1493; color: white; box-shadow: 0 0 25px #ff69b4;
+    }
+    #nextBtn:hover { transform: scale(1.12); background: #d81b60; }
+    
+    #noBtn {
+      background: #78909c; color: white;
+      position: relative; transition: all 0.2s;
+    }
   </style>
 </head>
 <body>
 
-<div id="info">Kamu Saturnusku — aku rela mengorbit selamanya ♡</div>
+  <!-- Layer 1: Pesan pertama (kalimat diperpanjang) -->
+  <div id="message">
+    <div class="msg-box">
+      <h1>Happy Valentine's Day,<br><span id="nama"></span>! ❤️</h1>
+      <img class="photo" src="foto1.jpg" alt="Foto kita">
+      <p id="pesan">
+        Dari pertama kali aku melihatmu, rasanya dunia jadi lebih berwarna.<br>
+        Setiap senyummu, setiap ceritamu, setiap hari bersamamu adalah bukti bahwa cinta itu nyata.<br>
+        Kamu adalah bintang terindah di galaksi hatiku.<br>
+        Maukah kamu jadi Valentine-ku hari ini... dan selamanya? 💫
+      </p>
+      <div>
+        <button id="nextBtn" class="btn">Next yok ada kejutan dari aku →</button>
+        <button id="noBtn" class="btn">Tidak mau</button>
+      </div>
+    </div>
+  </div>
 
-<div class="modal" id="modal">
-  <span class="close">×</span>
-  <img id="modal-img" src="">
-  <p id="modal-text"></p>
-</div>
+  <!-- Layer 2: Surprise cokelat (kalimat juga diperpanjang sedikit) -->
+  <div id="surprise">
+    <div class="msg-box">
+      <h1>Yeyy kamu klik next! 🥰</h1>
+      <img class="photo" src="foto.jpg" alt="Hadiah spesial">
+      <p style="font-size:1.6rem; margin:35px 0; line-height:1.8;">
+        walaupun kamu bilang tidak terlalu suka cokelat...<br>
+        engkak papa kan aku kasih? Hehe...<br>
+        Ini cuma bentuk kecil dari rasa sayangku yang besar buat kamu.<br>
+        Makannya pelan-pelan aja ya, nikmatin satu-satu, biar rasanya lebih lama nempel di hati :)<br>
+        Aku sayang kamu banget, Titin...
+      </p>
+      <button onclick="location.reload()" class="btn" style="background:#ff5722;">Main lagi yuk!</button>
+    </div>
+  </div>
 
-<!-- Three.js mini (super ringan) -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.167.1/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.167.1/examples/js/controls/OrbitControls.js"></script>
+  <!-- Musik dari file lokal -->
+  <audio id="bgm" loop preload="auto">
+    <source src="romance.mp3" type="audio/mpeg">
+  </audio>
 
-<script>
-// Setup Three.js
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x000008);
-const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(devicePixelRatio);
-document.body.appendChild(renderer.domElement);
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script>
+    // ================== DATA PERSONAL ==================
+    const namaDia = "Titin";
+    const pesanCustom = `Kamu adalah bintang terindah di galaksi hatiku.\nSelamanya bersama ya? 💫❤️`; // ini tidak dipakai lagi karena sudah diganti teks panjang di HTML
+    // ===================================================
 
-// Cahaya
-const light = new THREE.PointLight(0xffffff, 2);
-light.position.set(10,10,10);
-scene.add(light);
-scene.add(new THREE.AmbientLight(0x404040));
+    // Musik langsung play dari awal (mute dulu lalu unmute)
+    const audio = document.getElementById('bgm');
+    audio.volume = 0;
+    audio.play().catch(() => {});
+    setTimeout(() => {
+      audio.volume = 0.35;
+    }, 1500);
 
-// Planet (foto dia) - BULAT SEMPURNA
-const planetGeometry = new THREE.SphereGeometry(3, 64, 64);
-const planetTexture = new THREE.TextureLoader().load('dia.jpg'); // GANTI FOTO DIA
-const planetMaterial = new THREE.MeshPhongMaterial({ map: planetTexture });
-const planet = new THREE.Mesh(planetGeometry, planetMaterial);
-scene.add(planet);
+    // Three.js setup
+    let scene = new THREE.Scene();
+    let camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 2000);
+    let renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-// Cincin Saturnus dari ribuan partikel
-const ringGeometry = new THREE.BufferGeometry();
-const ringVertices = [];
-const ringColors = [];
-const memories = [
-  {img:'foto1.jpg', text:'Pertama kali senyum kamu bikin aku jatuh cinta'},
-  {img:'foto2.jpg', text:'Kamu alasan aku senyum setiap hari ♡'},
-  {img:'foto3.jpg', text:'Setiap detik sama kamu adalah keajaiban'},
-  {img:'foto4.jpg', text:'I love you to Saturn and back ❤️'},
-  // Tambah sendiri sebanyak mau
-];
+    scene.background = new THREE.Color(0x000011);
+    camera.position.set(0, 0, 8);
 
-for(let i = 0; i < 12000; i++) {
-  const angle = Math.random() * Math.PI * 2;
-  const radius = 4.5 + Math.random() * 4;
-  const y = (Math.random() - 0.5) * 0.15;
+    scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+    const light1 = new THREE.PointLight(0xff69b4, 3, 50); light1.position.set(5, 5, 5); scene.add(light1);
+    const light2 = new THREE.PointLight(0xffffff, 2, 40); light2.position.set(-5, 5, -5); scene.add(light2);
 
-  const x = Math.cos(angle) * radius;
-  const z = Math.sin(angle) * radius;
+    // Stars
+    const starsGeometry = new THREE.BufferGeometry();
+    const starsCount = 8000;
+    const posArray = new Float32Array(starsCount * 3);
+    for (let i = 0; i < starsCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 2000;
+    }
+    starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 1.2 });
+    scene.add(new THREE.Points(starsGeometry, starsMaterial));
 
-  ringVertices.push(x, y, z);
+    // Heart shape
+    const heartShape = new THREE.Shape();
+    heartShape.moveTo(0, 0);
+    heartShape.bezierCurveTo(0, 3, -5, 5, -5, 2);
+    heartShape.bezierCurveTo(-5, -1, -2, -4, 0, -6);
+    heartShape.bezierCurveTo(2, -4, 5, -1, 5, 2);
+    heartShape.bezierCurveTo(5, 5, 0, 3, 0, 0);
+    const extrudeSettings = { depth: 1, bevelEnabled: true, bevelThickness: 0.5, bevelSize: 0.3, bevelSegments: 5 };
+    const heartGeometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
+    const heartMaterial = new THREE.MeshPhongMaterial({
+      color: 0xff1493,
+      emissive: 0xff69b4,
+      emissiveIntensity: 0.7,
+      shininess: 120
+    });
+    const mainHeart = new THREE.Mesh(heartGeometry, heartMaterial);
+    mainHeart.scale.set(1.2, 1.2, 1.2);
+    mainHeart.rotation.x = -Math.PI / 4;
+    scene.add(mainHeart);
 
-  // Warna partikel cincin (krem, pink, putih)
-  const color = new THREE.Color();
-  if (i < memories.length * 50) {
-    color.setHSL(0.8, 0.8, 0.9); // partikel kenangan lebih terang
-  } else {
-    color.setHSL(0.1, 0.3, Math.random() * 0.4 + 0.5);
-  }
-  ringColors.push(color.r, color.g, color.b);
-}
+    // Floating hearts
+    let smallHearts = [];
+    for (let i = 0; i < 250; i++) {
+      const scale = 0.08 + Math.random() * 0.25;
+      const h = new THREE.Mesh(heartGeometry, heartMaterial.clone());
+      h.scale.set(scale, scale, scale);
+      h.position.set(
+        (Math.random() - 0.5) * 60,
+        (Math.random() - 0.5) * 60,
+        (Math.random() - 0.5) * 60
+      );
+      h.userData = {
+        speed: 0.005 + Math.random() * 0.015,
+        rotSpeed: (Math.random() - 0.5) * 0.03,
+        orbitRadius: 10 + Math.random() * 20,
+        orbitAngle: Math.random() * Math.PI * 2
+      };
+      scene.add(h);
+      smallHearts.push(h);
+    }
 
-ringGeometry.setAttribute('position', new THREE.Float32BufferAttribute(ringVertices, 3));
-ringGeometry.setAttribute('color', new THREE.Float32BufferAttribute(ringColors, 3));
+    // Klik hati besar
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
 
-const ringMaterial = new THREE.PointsMaterial({
-  size: 0.04,
-  vertexColors: true,
-  transparent: true,
-  opacity: 0.9,
-  blending: THREE.AdditiveBlending
-});
-const ring = new THREE.Points(ringGeometry, ringMaterial);
-ring.rotation.x = Math.PI / 2 * 1.4; // miring kayak Saturnus asli
-scene.add(ring);
+    window.addEventListener('click', (event) => {
+      mouse.x = (event.clientX / innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / innerHeight) * 2 + 1;
 
-camera.position.z = 12;
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObject(mainHeart);
 
-// Kontrol putar + zoom
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.autoRotate = true;
-controls.autoRotateSpeed = 0.5;
+      if (intersects.length > 0 || Math.hypot(mouse.x, mouse.y) < 0.5) {
+        document.getElementById('nama').textContent = namaDia;
+        document.getElementById('message').style.display = 'flex';
 
-// Raycaster buat klik partikel kenangan
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-let clickedMemory = 0;
+        // Explosion
+        for (let i = 0; i < 400; i++) {
+          const scale = 0.05 + Math.random() * 0.2;
+          const particle = new THREE.Mesh(heartGeometry, heartMaterial.clone());
+          particle.scale.set(scale, scale, scale);
+          particle.position.copy(mainHeart.position);
+          particle.userData = {
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: (Math.random() - 0.5) * 0.4 + 0.1,
+            vz: (Math.random() - 0.5) * 0.4,
+            life: 1 + Math.random() * 2
+          };
+          scene.add(particle);
+          smallHearts.push(particle);
+        }
+      }
+    });
 
-window.addEventListener('click', (e) => {
-  mouse.x = (e.clientX / innerWidth) * 2 - 1;
-  mouse.y = -(e.clientY / innerHeight) * 2 + 1;
-  raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObject(ring);
-  if (intersects.length > 0 && clickedMemory < memories.length) {
-    const mem = memories[clickedMemory % memories.length];
-    document.getElementById('modal-img').src = mem.img;
-    document.getElementById('modal-text').innerText = mem.text;
-    document.getElementById('modal').style.display = 'flex';
-    clickedMemory++;
-  }
-});
+    // Tombol Tidak mau berpindah saat cursor mendekat
+    const noBtn = document.getElementById('noBtn');
+    noBtn.addEventListener('mousemove', (e) => {
+      const rect = noBtn.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const dist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
 
-document.querySelector('.close').onclick = () => {
-  document.getElementById('modal').style.display = 'none';
-};
+      if (dist < 150) {
+        const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) + Math.PI;
+        const move = 100 + Math.random() * 80;
+        const newX = Math.cos(angle) * move;
+        const newY = Math.sin(angle) * move;
+        noBtn.style.transform = `translate(${newX}px, ${newY}px)`;
+      }
+    });
 
-// Animasi
-function animate() {
-  requestAnimationFrame(animate);
-  planet.rotation.y += 0.002;
-  ring.rotation.z += 0.0005;
-  controls.update();
-  renderer.render(scene, camera);
-}
-animate();
+    // Klik Next → tampilkan surprise
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      document.getElementById('message').style.display = 'none';
+      document.getElementById('surprise').style.display = 'flex';
 
-// Responsive
-window.addEventListener('resize', () => {
-  camera.aspect = innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-});
+      // Confetti surprise
+      for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+          const conf = document.createElement('div');
+          conf.style.cssText = `
+            position:fixed; width:12px; height:12px; border-radius:50%;
+            background:${['#ff1493','#ffeb3b','#4caf50','#2196f3'][Math.floor(Math.random()*4)]};
+            left:${Math.random()*100}vw; top:-20px; pointer-events:none;
+            animation: fall ${Math.random()*3+2}s linear forwards;
+          `;
+          document.body.appendChild(conf);
+          setTimeout(() => conf.remove(), 5000);
+        }, i * 40);
+      }
+    });
 
-// Musik
-const lagu = new Audio('lagu.mp3');
-lagu.loop = true;
-document.body.onclick = () => lagu.play();
-</script>
+    // CSS confetti
+    const style = document.createElement('style');
+    style.innerHTML = `@keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity:0; } }`;
+    document.head.appendChild(style);
+
+    // Animasi Three.js
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const time = Date.now() * 0.0005;
+      mainHeart.rotation.y += 0.003;
+      mainHeart.scale.setScalar(1.2 + Math.sin(time * 2) * 0.15);
+
+      smallHearts.forEach((h, i) => {
+        h.rotation.y += h.userData.rotSpeed || 0.01;
+        h.userData.orbitAngle += h.userData.speed;
+        h.position.x = Math.cos(h.userData.orbitAngle) * h.userData.orbitRadius;
+        h.position.z = Math.sin(h.userData.orbitAngle) * h.userData.orbitRadius;
+        h.position.y += Math.sin(time * 2 + i) * 0.02;
+
+        if (h.userData.vx) {
+          h.position.x += h.userData.vx * 0.08;
+          h.position.y += h.userData.vy * 0.08;
+          h.position.z += h.userData.vz * 0.08;
+          h.userData.life -= 0.008;
+          h.material.opacity = h.userData.life;
+          if (h.userData.life <= 0) scene.remove(h);
+        }
+      });
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+  </script>
 </body>
 </html>
